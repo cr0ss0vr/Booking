@@ -61,12 +61,24 @@ public class AppointmentController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Create(AppointmentViewModel model)
     {
-        bool available = true;
         model.AppointmentTypes = GetAnimalTypes(); // Repopulate dropdown
+
+        bool available = true;
+        bool outOfHours = false;
+
+        var newAppointmentStartTime = model.Time;
+        var newAppointmentEndTime = model.Time.Add(model.AppointmentTypes.FirstOrDefault(x => x.TypeID == model.AnimalTypeId).AppointmentLength);
+        var closingTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 17,0,0);
+        
         // Validate AnimalTypeId against enum values
         if (!Enum.IsDefined(typeof(eAnimalType), model.AnimalTypeId))
         {
             ModelState.AddModelError("AnimalTypeId", "Invalid Animal Type selected.");
+        }
+
+        if (newAppointmentEndTime > closingTime)
+        {
+            outOfHours = true;
         }
 
         List<Appointment> appointments = GetAllAppointments();
@@ -74,9 +86,7 @@ public class AppointmentController : Controller
         {
             var existingAppointmentStartTime = appointment.Date;
             var existingAppointmentEndTime = appointment.Date.Add(appointment.AppointmentLength);
-            var newAppointmentStartTime = model.Time;
-            var newAppointmentEndTime = model.Time.Add(model.AppointmentTypes.FirstOrDefault(x=>x.TypeID==model.AnimalTypeId).AppointmentLength);
-            
+
             if (newAppointmentEndTime > existingAppointmentStartTime && newAppointmentStartTime < existingAppointmentEndTime)
             {
                 available = false;
@@ -93,6 +103,11 @@ public class AppointmentController : Controller
         if (!available)
         {
             ModelState.AddModelError("Time", "Time is already used, please choose another time.");
+        }
+
+        if (outOfHours)
+        {
+            ModelState.AddModelError("Time", "Appointment end-time is after closing time.");
         }
 
         if (!ModelState.IsValid)

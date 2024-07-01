@@ -3,15 +3,6 @@
 
 <h2>Create Appointment</h2>
 
-@{
-    // Get the appointment length based on the selected AnimalTypeId
-    AppointmentType selectedAnimalType = Model.AppointmentTypes.FirstOrDefault(x => x.TypeID == Model.AnimalTypeId);
-    var maxTime = DateTime.Today.AddHours(16); // Default maxTime if no AnimalType is selected
-    if (selectedAnimalType != null)
-    {
-        maxTime = DateTime.Today.Subtract(selectedAnimalType.AppointmentLength); // Adjust as needed based on how AppointmentLength is defined
-    }
-}
 
 <form asp-action="Create">
     <div class="form-group">
@@ -49,33 +40,6 @@
         <input asp-for="Age" type="number" id="Age" name="Age" class="form-control" required>
         <span asp-validation-for="Age" class="text-danger"></span>
     </div>
-
-    <script>
-        // Function to check if a time is within the allowed range
-        function isTimeWithinRange(timeStr, minTime, maxTime) {
-            return timeStr >= minTime && timeStr <= maxTime;
-        }
-
-        // Disable times outside the allowed range
-        var timeInput = document.getElementById('Time');
-        timeInput.addEventListener('input', function () {
-            var selectedTime = timeInput.value;
-            var minTime = '09:00';
-            var maxTimeStr = '@maxTime.ToString("HH:mm")'; // Convert maxTime to string format for comparison
-
-            if (!isTimeWithinRange(selectedTime, minTime, maxTimeStr)) {
-                timeInput.setCustomValidity('Please select a time between 09:00 and ' + maxTimeStr + '.');
-            } else {
-                timeInput.setCustomValidity('');
-            }
-        });
-
-        // Set the initial range for the input
-        var minTime = '09:00';
-        var maxTimeStr = '@maxTime.ToString("HH:mm")';
-        timeInput.setAttribute('min', minTime);
-        timeInput.setAttribute('max', maxTimeStr);
-    </script>
 
     <button type="submit" class="btn btn-primary">Create</button>
 </form>
