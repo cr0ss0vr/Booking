@@ -1,17 +1,13 @@
 ﻿
 using System.Data;
-
-namespace Booking.Server
+public interface IDatabaseInterface
 {
-    public interface IDatabaseInterface
-    {
-        void Insert(string tableName, Dictionary<string, object> columns);
+    void Insert(string tableName, Dictionary<string, object> columns);
         
-        void Update(string tableName, Dictionary<string, object> columns, string whereClause);
+    void Update(string tableName, Dictionary<string, object> columns, string whereClause);
         
-        DataTable Select(string tableName, string[] columns, string whereClause);
-        DataTable Select(string tableName, string[] columns);
+    DataTable Select(string tableName, string[] columns, string whereClause);
+    DataTable Select(string tableName, string[] columns);
 
-        void Delete(string tableName, string whereClause);
-    }
+    void Delete(string tableName, string whereClause);
 }

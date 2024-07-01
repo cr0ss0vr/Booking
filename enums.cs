@@ -1,12 +1,9 @@
-﻿namespace Booking.Server
+﻿public class enums
 {
-    public class enums
+    public enum eAnimalType
     {
-        public enum AnimalType
-        {
-            Dog,
-            Cat,
-            Rabbit
-        }
+        Dog = 1,
+        Cat,
+        Rabbit
     }
 }
