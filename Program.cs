@@ -6,8 +6,17 @@ namespace Booking
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Load configuration from appsettings.json
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Configure DatabaseInterface with connection string from appsettings.json
+            string connectionString = configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddSingleton<IDatabaseInterface>(new DatabaseInterface(connectionString));
 
             var app = builder.Build();
 

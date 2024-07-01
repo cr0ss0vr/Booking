@@ -4,8 +4,12 @@ using static enums;
 
 public class AppointmentController : Controller
 {
-    static string connString = "Server=localhost;Database=Booking;User Id=sa;Password=superadmin;";
-    IDatabaseInterface db = new DatabaseInterface(connString);
+    private readonly IDatabaseInterface _db;
+
+    public AppointmentController(IDatabaseInterface db)
+    {
+        _db = db;
+    }
 
     public IActionResult Index()
     {
@@ -16,12 +20,12 @@ public class AppointmentController : Controller
     public List<Appointment> GetAllAppointments()
     {
         List<Appointment> appointments = new List<Appointment>();
-        var dataTable = db.Select("Appointment", new string[] { "*" });
+        var dataTable = _db.Select("Appointment", new string[] { "*" });
         if (dataTable != null)
         {
             foreach (DataRow row in dataTable.Rows)
             {
-                var appointment = new Appointment(row);
+                var appointment = new Appointment(GetAnimalTypes(), row);
                 appointments.Add(appointment);
             }
         }
@@ -30,13 +34,13 @@ public class AppointmentController : Controller
 
     public Appointment Get(DateTime datetime, string name)
     {
-        var dataTable = db.Select("Appointment", new string[] { "*" }, $"date='{datetime}' and name='{name}'");
+        var dataTable = _db.Select("Appointment", ["*"], $"date='{datetime}' and name='{name}'");
         if (dataTable == null)
         {
             return null;
         }
 
-        var appointment = new Appointment(dataTable.Rows[0]);
+        var appointment = new Appointment(GetAnimalTypes(), dataTable.Rows[0]);
         return appointment;
     }
 
@@ -125,14 +129,14 @@ public class AppointmentController : Controller
             { "PhoneNumber", model.PhoneNumber }
         };
 
-        db.Insert("Appointment", appointmentData);
+        _db.Insert("Appointment", appointmentData);
 
         return RedirectToAction("Index"); // Redirect to appointment list
     }
 
     private List<AppointmentType> GetAnimalTypes()
     {
-        var dataTable = db.Select("AnimalType", new string[] { "*" });
+        var dataTable = _db.Select("AnimalType", ["*"]);
         List<AppointmentType> animalTypes = new List<AppointmentType>();
         if (dataTable != null)
         {

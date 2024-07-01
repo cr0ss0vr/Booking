@@ -28,7 +28,7 @@ public class Appointment
 
     private AppointmentType _appointmentType;
 
-    public Appointment(DataRow dataRow)
+    public Appointment(List<AppointmentType> appointmentTypes, DataRow dataRow)
     {
         if (dataRow == null) return;
         Id = Convert.ToInt32(dataRow["ID"]);
@@ -36,6 +36,6 @@ public class Appointment
         Date = Convert.ToDateTime(dataRow["Date"]);
         PhoneNumber = Convert.ToString(dataRow["PhoneNumber"]);
         Age = Convert.ToInt32(dataRow["Age"]);
-        _appointmentType = new AppointmentType((eAnimalType)Convert.ToInt32(dataRow["AnimalType"]));
+        _appointmentType = new AppointmentType(appointmentTypes, (eAnimalType)Convert.ToInt32(dataRow["AnimalType"]));
     }
 }
