@@ -1,5 +1,4 @@
-﻿
-using System.Data;
+﻿using System.Data;
 public interface IDatabaseInterface
 {
     void Insert(string tableName, Dictionary<string, object> columns);

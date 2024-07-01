@@ -9,7 +9,7 @@
             <div class="time-header">@time.ToString("HH:mm")</div>
         }
     </div>
-    
+
     <div class="appointments-column">
         @foreach (var appointment in Model)
         {
@@ -17,15 +17,12 @@
 
             <div class="appointment"
                  style="top: @(CalculateTopPosition(appointment.Date))%;
-                        height: @(CalculateAppointmentHeight(appointment.Date, appointmentEnd))%;
-                        left: @(CalculateLeftPosition(appointment.Date))%;
-                        width: @(CalculateAppointmentWidth(appointment.Date, appointmentEnd))%;">
+                        height: @(CalculateAppointmentHeight(appointment.Date, appointmentEnd))%;">
                 <div class="Name">@appointment.Name</div>
                 <div class="AnimalType">@appointment.Animal</div>
             </div>
         }
     </div>
-    
 </div>
 <div style="margin-top: 20px; text-align: center;">
     <a asp-action="Create" class="btn btn-primary">Create Appointment</a>
@@ -36,25 +33,28 @@
         display: flex;
         width: 100%;
         height: 100%;
+        border: 1px solid #ccc;
     }
 
     .time-column {
         display: flex;
         flex-direction: column;
-        width: 120px; 
+        width: 120px;
+        border-right: 1px solid #ccc; /* Add border to the right of time column */
     }
 
     .time-header {
         padding: 5px;
         border-top: 1px solid #ccc;
-        border-left: 1px solid #ccc;
-        border-right: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        height: 30px;
+        box-sizing: border-box;
     }
 
     .appointments-column {
         position: relative;
         flex-grow: 1;
-        margin-left: -1px;
+        margin-left: -1px; /* Adjusted margin to align with the time column border */
     }
 
     .appointment {
@@ -63,6 +63,7 @@
         border: 1px solid #ccc;
         padding: 5px;
         overflow: hidden;
+        box-sizing: border-box;
     }
 
     .Name {
@@ -76,34 +77,14 @@
 </style>
 
 @functions {
-    // Function to calculate the top position of the appointment based on its start time
     double CalculateTopPosition(DateTime startTime)
-    {
-        TimeSpan fromNineAM = startTime.TimeOfDay - TimeSpan.FromHours(9);
-        double percentageFromNineAM = (fromNineAM.TotalMinutes / (8 * 59)) * 100;
-        return percentageFromNineAM;
-    }
-
-    // Function to calculate the height of the appointment based on its start and end times
-    double CalculateAppointmentHeight(DateTime startTime, DateTime endTime)
-    {
-        TimeSpan duration = endTime - startTime;
-        double appointmentDurationMinutes = duration.TotalMinutes;
-        double percentageOfTotalDay = (appointmentDurationMinutes / (8 * 60)) * 100;
-        percentageOfTotalDay = Math.Floor(percentageOfTotalDay);
-        return percentageOfTotalDay;
-    }
-
-    // Function to calculate the left position of the appointment based on its start time
-    double CalculateLeftPosition(DateTime startTime)
     {
         TimeSpan fromNineAM = startTime.TimeOfDay - TimeSpan.FromHours(9);
         double percentageFromNineAM = (fromNineAM.TotalMinutes / (8 * 60)) * 100;
         return percentageFromNineAM;
     }
 
-    // Function to calculate the width of the appointment based on its start and end times
-    double CalculateAppointmentWidth(DateTime startTime, DateTime endTime)
+    double CalculateAppointmentHeight(DateTime startTime, DateTime endTime)
     {
         TimeSpan duration = endTime - startTime;
         double appointmentDurationMinutes = duration.TotalMinutes;

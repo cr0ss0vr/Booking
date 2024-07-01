@@ -1,4 +1,5 @@
-﻿using static enums;
+﻿using System.Data;
+using static enums;
 
 public class AppointmentType
 {
@@ -23,5 +24,12 @@ public class AppointmentType
         Name = (string)dataTable.Rows[0]["Name"];
         AppointmentLength = TimeSpan.FromMinutes((long)dataTable.Rows[0]["AppointmentLength"]);
 
+    }
+
+    public AppointmentType(DataRow row)
+    {
+        TypeID = TypeID = (eAnimalType)Convert.ToInt32(row["ID"]);
+        Name = (string)row["Name"];
+        AppointmentLength = TimeSpan.FromMinutes((long)row["AppointmentLength"]);
     }
 }

@@ -3,13 +3,17 @@
 
 <h2>Create Appointment</h2>
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label asp-for="Time">Time:</label>
-        <input asp-for="Time" type="time" id="Time" name="Time" class="form-control" required>
-        <span asp-validation-for="Time" class="text-danger"></span>
-    </div>
+@{
+    // Get the appointment length based on the selected AnimalTypeId
+    AppointmentType selectedAnimalType = Model.AppointmentTypes.FirstOrDefault(x => x.TypeID == Model.AnimalTypeId);
+    var maxTime = DateTime.Today.AddHours(16); // Default maxTime if no AnimalType is selected
+    if (selectedAnimalType != null)
+    {
+        maxTime = DateTime.Today.Subtract(selectedAnimalType.AppointmentLength); // Adjust as needed based on how AppointmentLength is defined
+    }
+}
 
+<form asp-action="Create">
     <div class="form-group">
         <label asp-for="Name">Name:</label>
         <input asp-for="Name" type="text" id="Name" name="Name" class="form-control" required>
@@ -17,12 +21,24 @@
     </div>
 
     <div class="form-group">
+        <label asp-for="PhoneNumber">Phone Number:</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Time">Time:</label>
+        <input asp-for="Time" type="time" id="Time" name="Time" class="form-control" required>
+        <span asp-validation-for="Time" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
         <label asp-for="AnimalTypeId">Animal Type:</label>
         <select asp-for="AnimalTypeId" id="AnimalTypeId" name="AnimalTypeId" class="form-control" required>
             <option value="">Select Animal Type</option>
-            @foreach (var animalType in AnimalTypes)
+            @foreach (var type in Model.AppointmentTypes)
             {
-                <option value="@animalType">@animalType</option>
+                <option value="@((int)type.TypeID)">@type.Name</option>
             }
         </select>
         <span asp-validation-for="AnimalTypeId" class="text-danger"></span>
@@ -34,40 +50,32 @@
         <span asp-validation-for="Age" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="PhoneNumber">Phone Number:</label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
+    <script>
+        // Function to check if a time is within the allowed range
+        function isTimeWithinRange(timeStr, minTime, maxTime) {
+            return timeStr >= minTime && timeStr <= maxTime;
+        }
+
+        // Disable times outside the allowed range
+        var timeInput = document.getElementById('Time');
+        timeInput.addEventListener('input', function () {
+            var selectedTime = timeInput.value;
+            var minTime = '09:00';
+            var maxTimeStr = '@maxTime.ToString("HH:mm")'; // Convert maxTime to string format for comparison
+
+            if (!isTimeWithinRange(selectedTime, minTime, maxTimeStr)) {
+                timeInput.setCustomValidity('Please select a time between 09:00 and ' + maxTimeStr + '.');
+            } else {
+                timeInput.setCustomValidity('');
+            }
+        });
+
+        // Set the initial range for the input
+        var minTime = '09:00';
+        var maxTimeStr = '@maxTime.ToString("HH:mm")';
+        timeInput.setAttribute('min', minTime);
+        timeInput.setAttribute('max', maxTimeStr);
+    </script>
 
     <button type="submit" class="btn btn-primary">Create</button>
 </form>
-
-<script>
-    // Function to check if a time is within the allowed range
-    function isTimeWithinRange(timeStr, minTime, maxTime) {
-        return timeStr >= minTime && timeStr <= maxTime;
-    }
-
-    // Disable times outside the allowed range
-    var timeInput = document.getElementById('Time');
-    timeInput.addEventListener('input', function () {
-        var selectedTime = timeInput.value;
-        var minTime = '09:00';
-        var maxTime = '16:45';
-
-        maxTime = @{AnimalTypes}
-
-        if (!isTimeWithinRange(selectedTime, minTime, maxTime)) {
-            timeInput.setCustomValidity('Please select a time between ' + minTime + ' and '+maxTime+'.');
-        } else {
-            timeInput.setCustomValidity('');
-        }
-    });
-
-    // Set the initial range for the input
-    var minTime = '09:00';
-    var maxTime = '16:45';
-    timeInput.setAttribute('min', minTime);
-    timeInput.setAttribute('max', maxTime);
-</script>
