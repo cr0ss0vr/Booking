@@ -24,5 +24,8 @@ public class AppointmentViewModel
     [PhoneNumberValidation(ErrorMessage = "Invalid Phone Number format.")]
     public string PhoneNumber { get; set; }
 
+    [Required(ErrorMessage = "Member is required.")]
+    public bool Member { get; set; }
+
     public List<AppointmentType> AppointmentTypes { get; set; }
 }

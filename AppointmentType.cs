@@ -9,6 +9,10 @@ public class AppointmentType
 
     public TimeSpan AppointmentLength { get; internal set; }
 
+    public int NonMemberCost { get; internal set; }
+
+    public int MemberCost { get; internal set; }
+
     private readonly IDatabaseInterface _db;
 
     public AppointmentType(List<AppointmentType> appointmentTypes, eAnimalType? animal = 0)
@@ -18,7 +22,6 @@ public class AppointmentType
         TypeID = appointmentType.TypeID;
         Name = appointmentType.Name;
         AppointmentLength = appointmentType.AppointmentLength;
-
     }
 
     public AppointmentType(DataRow row)
@@ -26,5 +29,7 @@ public class AppointmentType
         TypeID = TypeID = (eAnimalType)Convert.ToInt32(row["ID"]);
         Name = (string)row["Name"];
         AppointmentLength = TimeSpan.FromMinutes((long)row["AppointmentLength"]);
+        NonMemberCost = (int)row["MemberCost"];
+        MemberCost = (int)row["NonMemberCost"];
     }
 }

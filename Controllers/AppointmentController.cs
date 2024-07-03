@@ -14,13 +14,24 @@ public class AppointmentController : Controller
     public IActionResult Index()
     {
         List<Appointment> appointments = GetAllAppointments();
+        List<AppointmentType> appointmentTypes = GetAnimalTypes();
+        int TotalCost = 0;
+
+        foreach (Appointment a in appointments)
+        {
+            TotalCost += a.Member == true ? appointmentTypes.First(x => a.Animal == x.Name).MemberCost : appointmentTypes.First(x => a.Animal == x.Name).NonMemberCost;
+        }
+
+        int AverageCost = TotalCost / appointmentTypes.Count;
+
+
         return View(appointments);
     }
 
     public List<Appointment> GetAllAppointments()
     {
         List<Appointment> appointments = new List<Appointment>();
-        var dataTable = _db.Select("Appointment", new string[] { "*" });
+        var dataTable = _db.Select("Appointment", ["*"], "date = ''");
         if (dataTable != null)
         {
             foreach (DataRow row in dataTable.Rows)
@@ -72,8 +83,9 @@ public class AppointmentController : Controller
 
         var newAppointmentStartTime = model.Time;
         var newAppointmentEndTime = model.Time.Add(model.AppointmentTypes.FirstOrDefault(x => x.TypeID == model.AnimalTypeId).AppointmentLength);
-        var closingTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 17,0,0);
-        
+        var closingTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 17, 0, 0);
+        var openingTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 0, 0);
+
         // Validate AnimalTypeId against enum values
         if (!Enum.IsDefined(typeof(eAnimalType), model.AnimalTypeId))
         {
@@ -81,6 +93,11 @@ public class AppointmentController : Controller
         }
 
         if (newAppointmentEndTime > closingTime)
+        {
+            outOfHours = true;
+        }
+
+        if (newAppointmentStartTime < openingTime)
         {
             outOfHours = true;
         }
@@ -126,7 +143,8 @@ public class AppointmentController : Controller
             { "Name", model.Name },
             { "AnimalType", (int)model.AnimalTypeId },
             { "Age", model.Age },
-            { "PhoneNumber", model.PhoneNumber }
+            { "PhoneNumber", model.PhoneNumber },
+            { "Member", model.Member }
         };
 
         _db.Insert("Appointment", appointmentData);

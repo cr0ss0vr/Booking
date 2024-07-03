@@ -11,6 +11,8 @@ public class Appointment
 
     public int Age { get; set; }
 
+    public bool Member { get; set; }
+
     public TimeSpan AppointmentLength {
         get
         {
@@ -37,5 +39,6 @@ public class Appointment
         PhoneNumber = Convert.ToString(dataRow["PhoneNumber"]);
         Age = Convert.ToInt32(dataRow["Age"]);
         _appointmentType = new AppointmentType(appointmentTypes, (eAnimalType)Convert.ToInt32(dataRow["AnimalType"]));
+        Member = Convert.ToBoolean(dataRow["Member"]);
     }
 }
