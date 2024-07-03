@@ -1,10 +1,10 @@
 ﻿@model List<Appointment>
-@totalCost int
 
 @{
     ViewData["Title"] = "Home Page";
 }
-<div id="TotalCost">@Model.TotalCost</div>
+<div id="TotalCost">Total Cost: @ViewBag.TotalCost</div>
+<div id="TotalCost">Average Cost: @ViewBag.AverageCost</div>
 <div id="calendar"></div>
 
 @section scripts {

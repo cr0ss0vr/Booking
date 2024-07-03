@@ -63,7 +63,7 @@ public class DatabaseInterface : IDatabaseInterface
         {
             connection.Open();
             string columns = string.Join(", ", columnNames);
-            string query = $"SELECT {columns} FROM {tableName}" + (string.IsNullOrEmpty(whereClause) ? string.Empty : $" WHERE {whereClause}");
+            string query = $"SET DATEFORMAT DMY; SELECT {columns} FROM {tableName}" + (string.IsNullOrEmpty(whereClause) ? string.Empty : $" WHERE {whereClause}");
 
             using (SqlCommand command = new SqlCommand(query, connection))
             {

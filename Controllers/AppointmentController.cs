@@ -22,16 +22,19 @@ public class AppointmentController : Controller
             TotalCost += a.Member == true ? appointmentTypes.First(x => a.Animal == x.Name).MemberCost : appointmentTypes.First(x => a.Animal == x.Name).NonMemberCost;
         }
 
-        int AverageCost = TotalCost / appointmentTypes.Count;
+        int AverageCost = TotalCost / appointments.Count;
 
-
+        ViewBag.AverageCost = AverageCost;
+        ViewBag.TotalCost = TotalCost;
         return View(appointments);
     }
 
     public List<Appointment> GetAllAppointments()
     {
         List<Appointment> appointments = new List<Appointment>();
-        var dataTable = _db.Select("Appointment", ["*"], "date = ''");
+        var closingTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 17, 0, 0);
+        var openingTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 0, 0);
+        var dataTable = _db.Select("Appointment", ["*"], $"date > '{openingTime}' and date < '{closingTime}'");
         if (dataTable != null)
         {
             foreach (DataRow row in dataTable.Rows)
